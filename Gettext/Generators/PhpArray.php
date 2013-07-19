@@ -2,12 +2,13 @@
 namespace Gettext\Generators;
 
 use Gettext\Entries;
+use Gettext\Translator;
 
 class PhpArray extends Generator {
 	static public function generate (Entries $entries, $string = false) {
 		$array = array();
 
-		$context_glue = '\u0004';
+		$context_glue = Translator::$context_glue;
 
 		foreach ($entries as $translation) {
 			$key = ($translation->hasContext() ? $translation->getContext().$context_glue : '').$translation->getOriginal();
@@ -26,7 +27,7 @@ class PhpArray extends Generator {
 			$domain => array(
 				'' => array(
 					'domain' => $domain,
-					'lang' => 'en',
+					'lang' => Translator::$lang,
 					'plural-forms' => 'nplurals=2; plural=(n != 1);'
 				)
 			)

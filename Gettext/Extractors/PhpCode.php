@@ -48,6 +48,7 @@ class PhpCode extends Extractor {
 		}
 
 		foreach ($functions as $args) {
+
 			$function = array_shift($args);
 
 			if (!isset(self::$functions[$function])) {

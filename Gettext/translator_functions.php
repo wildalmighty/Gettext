@@ -7,7 +7,7 @@ function __ ($original) {
 	if (func_num_args() === 1) {
 		return $text;
 	}
-
+	
 	$args = array_slice(func_get_args(), 1);
 
 	return vsprintf($text, is_array($args[0]) ? $args[0] : $args);
