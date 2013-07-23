@@ -36,6 +36,13 @@ function p__ ($context, $original) {
 
 	return vsprintf($text, is_array($args[0]) ? $args[0] : $args);
 }
+
+function np__ ($context, $original, $plural, $value) {
+	
+	return Translator::npgettext($context, $original,  $plural, $value);
+
+}
+
 /*
 
 Not implemented yet...

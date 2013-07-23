@@ -4,12 +4,21 @@ function _(s) {
 function __(str){
 	return i18n.gettext(str);
 }
+function __n(origal,plural,n){	
+	return i18n.translate(origal).ifPlural( n, plural).fetch( n );
+}
 
+//i18n.gettext('apples');
 function test(param) {
-	var a = __("Hello world, testing jsgettext");
+	var a = __n("Hello world, testing jsgettext ')' extra",')',8);
+	var b = __n("Hello world, testing jsgettext");
+	var n = 5;
 console.log(a);
 console.log(__(__('Test string')));
 console.log(__('Test string'));
+console.log(__n('%d apple','%d apples', n));
+console.log(__n('%d plum','%d plums',1));
+
 	var reg1 = /"[a-z]+"/i;
 	var reg2 = /[a-z]+\+\/"aa"/i;
 	var s1 = __('string 1: single quotes');

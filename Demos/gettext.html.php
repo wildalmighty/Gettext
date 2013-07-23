@@ -1,8 +1,8 @@
 <?php
 ini_set('display_errors', 'On');
 
-include('../Gettext/autoloader.php');
-include('../Gettext/translator_functions.php');
+//composer autoloader
+include('../vendor/autoload.php');
 
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'bg';
 $file_with_translations = 'locale/' . $lang . '/' . basename(__FILE__) . '.php';

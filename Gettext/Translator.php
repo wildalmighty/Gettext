@@ -39,15 +39,13 @@ class Translator
 
 	public static function getTranslationsAsEntries($domain = null,$entries = false)
 	{
-		//TODO: debug
-		//return new Entries;
-		
 		if(!$entries)
 			$entries = new Entries;
 		
 		if (empty($domain))
 			$domain = self::$domain;
 		//try to get translations from dictionary
+		
 		if(!empty($entries)){
 			foreach ($entries as $translator){
 				if(isset(self::$dictionary[$domain][$translator->original][1])){
@@ -149,11 +147,9 @@ class Translator
 		$translation = self::getTranslation($domain, $context, $original);
 
 		if (isset($translation[$key]) && $translation[$key] !== '') {
-//			return $translation[$key];
 			return sprintf($translation[$key], $value);
 		}
-
-		return ($key === 1) ? sprintf($original, $value) : sprintf($original, $plural, $value);
+		return ($key === 1) ? sprintf($original, $value) : sprintf($plural, $value);
 	}
 
 	public static function isPlural($n)

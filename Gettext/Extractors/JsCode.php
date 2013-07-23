@@ -5,14 +5,14 @@ use Gettext\Entries;
 
 class JsCode extends Extractor {
 	static public $functions = array(
-		'__' => '__',
 		'n__' => 'n__',
-		'p__' => 'p__'
+		'__n' => 'n__',
+		'p__' => 'p__',
+		'__p' => 'p__',
+		'__' => '__'
 	);
 
 	static public function parse ($file, Entries $entries) {
-		$strings = $regs = array();
-
 		$content = file_get_contents($file);
 		$encoding = mb_detect_encoding($content, array('UTF-8', 'ISO-8859-1', 'WINDOWS-1252'), true);
 
@@ -20,83 +20,103 @@ class JsCode extends Extractor {
 			$content = utf8_encode($content);
 		}
 
+		$functions = implode('|', array_keys(self::$functions));
 		$content = htmlspecialchars($content, ENT_NOQUOTES);
+		$length = strlen($content);
+		$index = 0;
 
-		$content = preg_replace_callback('# ( / (?: (?>[^/\\\\]++) | \\\\\\\\ | (?<!\\\\)\\\\(?!\\\\) | \\\\/ )+ (?<!\\\\)/ ) [a-z]* \b #ix', function ($match) use (&$regs) {
-			$counter = count($regs);
-			$regs[$counter] = $match[1];
+		while ($index < $length) {
+			if (($index = strpos($content, '(', $index)) === false) {
+				break;
+			}
 
-			return "<<reg{$counter}>>";
-		}, $content);
-
-		$content = preg_replace_callback(array(
-			'# " ( (?: (?>[^"\\\\]++) | \\\\\\\\ | (?<!\\\\)\\\\(?!\\\\) | \\\\" )* ) (?<!\\\\)" #ix',
-			"# ' ( (?: (?>[^'\\\\]++) | \\\\\\\\ | (?<!\\\\)\\\\(?!\\\\) | \\\\' )* ) (?<!\\\\)' #ix"
-		), function ($match) use (&$regs, &$strings) {
-			$counter = count($strings);
-
-			$strings[$counter] = preg_replace_callback("#<<reg(\d+)>>#", function ($match) use ($regs) {
-				return $regs[$match[1]];
-			}, $match[0]);
-
-			return "<<s{$counter}>>";
-		}, $content);
-
-		$content = preg_replace("#(//.*?)$#m", '', $content);
-		$content = preg_replace('#/\*(.*?)\*/#is', '', $content);
-
-		$content = preg_replace_callback("#<<s(\d+)>>#", function ($match) use ($strings) {
-			return $strings[$match[1]];
-		}, $content);
-
-		$keywords = implode('|', array_keys(self::$functions));
-		$strings = array();
-
-		preg_match_all('# (?:('.$keywords.')) \(\\ *" ( (?: (?>[^"\\\\]++) | \\\\\\\\ | (?<!\\\\)\\\\(?!\\\\) | \\\\" )* ) (?<!\\\\)"\\ *\) #ix', $content, $matches1, PREG_SET_ORDER);
-		$matches1 = self::stripQuotes($matches1, '"');
-
-		preg_match_all("# (?:($keywords)) \(\\ *' ( (?: (?>[^'\\\\]++) | \\\\\\\\ | (?<!\\\\)\\\\(?!\\\\) | \\\\' )* ) (?<!\\\\)'\\ *\) #ix", $content, $matches2, PREG_SET_ORDER);
-		$matches2 = self::stripQuotes($matches2, "'");
-
-		foreach (array_merge($matches1, $matches2) as $match) {
-			if (!isset(self::$functions[$match[1]])) {
+			if (preg_match('/(^|[^\w-])('.$functions.')$/', substr($content, 0, $index), $matches) !== 1) {
+				$index++;
 				continue;
 			}
 
-			switch (self::$functions[$match[1]]) {
+			$function = $matches[2];
+			$start = $index - strlen($function);
+			$quote = null;
+			$buffer = '';
+			$args = array();
+			$l = $p = null;
+			$index++;
+
+			for ($in = 0; $index < $length; $index++) {
+				$p = $l;
+				$l = $content[$index];
+
+				switch ($l) {
+					case '"':
+						if (($quote === '"') && ($p !== '\\')) {
+							$quote = null;
+						} else if ($quote === null) {
+							$quote = '"';
+						} else {
+							$buffer .= $l;
+						}
+						break;
+
+					case "'":
+						if (($quote === "'") && ($p !== '\\')) {
+							$quote = null;
+						} else if ($quote === null) {
+							$quote = "'";
+						} else {
+							$buffer .= $l;
+						}
+						break;
+
+					case ',':
+						if ($quote === null) {
+							$args[] = $buffer;
+							$buffer = '';
+						}
+						break;
+
+					case ')':
+						if ($quote === null) {
+							$args[] = $buffer;
+							break 2;
+						}
+						$buffer .= $l;
+						break;
+
+					case ' ':
+						if ($quote !== null) {
+							$buffer .= $l;
+						}
+						break;
+
+					default:
+						$buffer .= $l;
+						break;
+				}
+			}
+
+			foreach ($args as &$arg) {
+				$arg = str_replace('\\', '', $arg);
+			}
+
+			switch (self::$functions[$function]) {
 				case '__':
-					$original = $match[2];
+					$original = $args[0];
 					$translation = $entries->find('', $original) ?: $entries->insert('', $original);
 					break;
 
 				case 'n__':
-					$original = $match[2];
-					$plural = $match[3];
+					$original = $args[0];
+					$plural = isset($args[1]) ? $args[1] : '';
 					$translation = $entries->find('', $original, $plural) ?: $entries->insert('', $original, $plural);
 					break;
 
 				case 'p__':
-					$context = $match[2];
-					$original = $match[3];
+					$context = $args[0];
+					$original = $args[1];
 					$translation = $entries->find($context, $original) ?: $entries->insert($context, $original);
 					break;
 			}
 		}
-	}
-
-	static private function stripQuotes ($match, $quote) {
-		if (is_array($match)) {
-			foreach ($match as &$value) {
-				$value = self::stripQuotes($value, $quote);
-			}
-
-			return $match;
-		}
-
-		if ($quote === '"') {
-			return str_replace('\\"', '"', $match);
-		}
-
-		return str_replace("\\'", "'", $match);
 	}
 }

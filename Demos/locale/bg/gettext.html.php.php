@@ -10,7 +10,7 @@
     'This is a text' => 
     array (
       0 => '',
-      1 => 'Това е текст',
+      1 => 'Това е текст23213',
     ),
     'This is another text' => 
     array (
