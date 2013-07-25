@@ -9,8 +9,8 @@ function __ ($original) {
 	}
 	
 	$args = array_slice(func_get_args(), 1);
-
-	return vsprintf($text, is_array($args[0]) ? $args[0] : $args);
+	
+	return strtr($text, is_array($args[0]) ? $args[0] : $args);
 }
 
 function n__ ($original, $plural, $value) {

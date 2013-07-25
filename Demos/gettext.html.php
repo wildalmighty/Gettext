@@ -9,6 +9,7 @@ $file_with_translations = 'locale/' . $lang . '/' . basename(__FILE__) . '.php';
 $file_with_translationsJS = 'locale/' . $lang . '/javascript.js';
 Gettext\Translator::loadTranslations($file_with_translations);
 //Gettext\Translator::loadTranslations($file_with_translationsJS);
+$date = date('d.m.Y');
 ?>
 
 <header>
@@ -18,6 +19,8 @@ Gettext\Translator::loadTranslations($file_with_translations);
 </header>
 
 <div>
+	
+	<p><?= __('Today is :date',[':date'=> $date]); ?></p>
 	<p><?= __('This is another text'); ?></p>
 	<p><?= __('Това е българкси текст! Много обичам пуканки.'); ?></p>
 	<p><?= __('This is another text (with parenthesis)'); ?></p>

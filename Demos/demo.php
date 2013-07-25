@@ -76,7 +76,10 @@ if (isset($_POST['submit'])) {
 		foreach ($entries AS $key => $objTranslation) {
 			?>
 			<div>
-				<label><span style="color: green"><?= $objTranslation->context ?></span> <?= htmlspecialchars($objTranslation->original) ?></label>
+				<label>
+					<span style="color: green"><?= $objTranslation->context ?></span> 
+					<?= htmlspecialchars($objTranslation->original) ?>
+				</label>
 				<input type="hidden" name="translation<?= $key ?>[]" value="<?= htmlspecialchars($objTranslation->context) ?>" />
 				<input type="hidden" name="translation<?= $key ?>[]" value="<?= htmlspecialchars($objTranslation->original) ?>" />
 				<textarea disabled="disabled"><?= htmlspecialchars($objTranslation->original) ?></textarea>
