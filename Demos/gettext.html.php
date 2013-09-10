@@ -26,8 +26,18 @@ $date = date('d.m.Y');
 	<p><?= __('This is another text (with parenthesis)'); ?></p>
 	<p><?= __('This is another text "with double quotes"'); ?></p>
 	<p><?= htmlspecialchars(__('This is another text \'with escaped quotes\'')); ?></p>
-	<p><?= n__('%s point', '%s points', 4); ?></p>
+	<p><?= n__('%s point', '%s points', rand(1,3)); ?></p>
 	<p><?= p__('dsadasd', 'Text with prefix'); ?></p>
+	<?= foo() ?>
+	<?php
+	function foo(){
+		$date = time();
+		$date_str_parts_arr[] = __('on :date at :clock',
+				array(':date'=> date('d.m.Y',$date) ,':clock'=> date('H:i',$date))
+		);
+		return $date_str_parts_arr[0];
+	}
+	?>
 
 	<br>	
 	<script>

@@ -7,8 +7,8 @@ include('../vendor/autoload.php');
 $lang = isset($_GET['lang']) ? $_GET['lang'] : 'bg';
 
 //$file_to_translate = 'javascript.js';
-//$file_to_translate = 'gettext.html.php';
-$file_to_translate = 'smarty.html';
+$file_to_translate = 'gettext.html.php';
+//$file_to_translate = 'smarty.html';
 $file_extension = substr($file_to_translate, stripos($file_to_translate, '.') + 1);
 $file_with_translations = 'locale/' . $lang . '/' . $file_to_translate . '.php';
 

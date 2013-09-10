@@ -24,7 +24,6 @@ class PhpCode extends Extractor {
 					$functions[] = $currentFunction;
 					$currentFunction = null;
 				}
-
 				continue;
 			}
 
@@ -42,11 +41,12 @@ class PhpCode extends Extractor {
 			}
 
 			if (($value[0] === T_STRING) && is_string($tokens[$k + 1]) && ($tokens[$k + 1] === '(')) {
-				$currentFunction = array($value[1], $value[2]);
+				if(in_array($value[1],self::$functions))
+					$currentFunction = array($value[1], $value[2]);
 				continue;
 			}
 		}
-
+		
 		foreach ($functions as $args) {
 
 			$function = array_shift($args);

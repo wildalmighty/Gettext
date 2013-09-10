@@ -7,10 +7,10 @@
       'lang' => 'bg',
       'plural-forms' => 'nplurals=2; plural=(n != 1);',
     ),
-    'This is a text' => 
+    'Today is :date' => 
     array (
       0 => '',
-      1 => 'Това е текст23213',
+      1 => '',
     ),
     'This is another text' => 
     array (
@@ -32,6 +32,11 @@
       0 => '',
       1 => 'акйлхдсйад "дсадкусалкд"',
     ),
+    'This is another text \'with escaped quotes\'' => 
+    array (
+      0 => '',
+      1 => '',
+    ),
     '%s point' => 
     array (
       0 => '%s points',
@@ -41,7 +46,12 @@
     'dsadasd\\u0004Text with prefix' => 
     array (
       0 => '',
-      1 => 'префивяевяе',
+      1 => 'преф',
+    ),
+    'on :date at :clock' => 
+    array (
+      0 => '',
+      1 => 'на :date в :clock',
     ),
   ),
 ); ?>
